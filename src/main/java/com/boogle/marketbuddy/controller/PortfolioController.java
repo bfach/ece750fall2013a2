@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.boogle.marketbuddy.bean.Portfolio;
 import com.boogle.marketbuddy.bean.Stock;
+import com.boogle.marketbuddy.bean.Trade;
 import com.boogle.marketbuddy.bean.User;
 import com.boogle.marketbuddy.dao.PortfolioDAO;
 import com.boogle.marketbuddy.dao.UserDAO;
@@ -44,14 +45,14 @@ public class PortfolioController {
 	
 	@RequestMapping(value = "/portfolios/scheduleTrade/{username}", method = RequestMethod.POST)
 	@ResponseBody
-	public String makeTrade(@PathVariable String username, String stockCode, Double price, Integer number){
+	public String makeTrade(@PathVariable String username,  @RequestBody Trade trade){
 		User toUser = dao.findUserByName(username);
 		
 		if(toUser == null){
 			throw new IllegalArgumentException("Users do not exist");
 		}
 		
-		portfolioDAO.placeOrder(username, stockCode, price, number);
+		portfolioDAO.placeOrder(username, trade.getStockCode(), trade.getPrice(), trade.getNumber());
 		
 		return "TRADE MADE";
 		

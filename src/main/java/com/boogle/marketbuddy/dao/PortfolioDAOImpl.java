@@ -110,20 +110,6 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 		Transaction transaction = null;
 		
 		try {
-			//create share if needed
-			Share share = (Share) session.get(Portfolio.class, stockCode);
-			if(share == null){
-				LOG.debug("Creating new share type " + stockCode);
-				Transaction xaction = session.beginTransaction();
-				Share newShare = new Share();
-				newShare.setCode(stockCode);
-				session.merge(share);
-				xaction.commit();
-			}
-
-			
-			
-			transaction = session.beginTransaction();
 			
 			User user = userDAO.findUserByName(userName);
 			
@@ -136,6 +122,20 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 			if(portfolio == null){
 				throw new IllegalArgumentException("User portfolio does not exist");
 			}
+
+			//create share if needed
+			Share share = (Share) session.get(Share.class, stockCode);
+			if(share == null){
+				LOG.debug("Creating new share type " + stockCode);
+				Transaction xaction = session.beginTransaction();
+				Share newShare = new Share();
+				newShare.setCode(stockCode);
+				session.merge(newShare);
+				xaction.commit();
+				
+				share = newShare;
+			}
+			transaction = session.beginTransaction();
 			
 			//Add new stock and number of stocks to the user portfolio
 			portfolio.setUserId(user.getId());
@@ -147,7 +147,7 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 			stock.setShare(share);
 			
 			portfolio.getStocks().add(stock );
-			
+			session.merge(stock);
 			
 			transaction.commit();
 		} catch (Exception e) {
