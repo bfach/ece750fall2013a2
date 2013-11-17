@@ -11,4 +11,7 @@ public interface PortfolioDAO {
 	
 	void deletePortfolio(String username);
 	
+	void placeOrder(String userName, String stockCode, double price, int number);
+
+	
 }

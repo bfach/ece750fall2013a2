@@ -42,26 +42,16 @@ public class PortfolioController {
 		portfolioDAO.deletePortfolio(username);
 	}
 	
-	@RequestMapping(value = "/portfolios/makeTrade/{fromUsername}/{toUsername}", method = RequestMethod.POST)
+	@RequestMapping(value = "/portfolios/scheduleTrade/{username}", method = RequestMethod.POST)
 	@ResponseBody
-	public String makeTrade(@PathVariable String fromUsername, @PathVariable String toUsername, Stock stock){
-		User fromUser = dao.findUserByName(fromUsername);
-		User toUser = dao.findUserByName(toUsername);
+	public String makeTrade(@PathVariable String username, String stockCode, Double price, Integer number){
+		User toUser = dao.findUserByName(username);
 		
-		if(fromUser == null | toUser == null){
+		if(toUser == null){
 			throw new IllegalArgumentException("Users do not exist");
 		}
 		
-		Portfolio fromPortfolio = this.getPortfolio(fromUser.getUsername());
-		Portfolio toPortfolio = this.getPortfolio(toUser.getUsername());
-		
-		Stock saleStock = retrieveStock(stock, fromPortfolio);
-		
-		
-		fromPortfolio.getStocks().remove(saleStock);
-		toPortfolio.getStocks().add(saleStock);
-
-		//portfolioDAO.writePortfolio(fromPortfolio, toPortfolio);
+		portfolioDAO.placeOrder(username, stockCode, price, number);
 		
 		return "TRADE MADE";
 		

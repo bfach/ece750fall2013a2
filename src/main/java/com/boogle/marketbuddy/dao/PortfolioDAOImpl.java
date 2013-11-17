@@ -1,14 +1,18 @@
 package com.boogle.marketbuddy.dao;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.boogle.marketbuddy.bean.Account;
 import com.boogle.marketbuddy.bean.Portfolio;
 import com.boogle.marketbuddy.bean.Share;
 import com.boogle.marketbuddy.bean.Stock;
@@ -32,7 +36,7 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 		Transaction transaction = null;
 		
 		for(Stock stock : portfolio.getStocks()){
-			stock.setPortfolio(portfolio);
+			stock.setPortfolioId(portfolio.getPortfolioId());
 		}
 		
 		try {
@@ -65,8 +69,14 @@ public class PortfolioDAOImpl implements PortfolioDAO {
     		//session.clear();
         	
         	Hibernate.initialize(portfolio.getStocks());
+        
+        	Query query = session.createQuery("from Stock s where s.portfolioId = :portfolioId ");
+        	query.setParameter("portfolioId", portfolio.getPortfolioId());
+        	List<Stock> list = query.list();
         	
-    		return portfolio;
+        	portfolio.getStocks().addAll(list);
+        	
+        	return portfolio;
         }finally{
         	session.close();
         }
@@ -123,11 +133,17 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 			
 			Portfolio portfolio = retrievePortfolio(userName);
 			
+			if(portfolio == null){
+				throw new IllegalArgumentException("User portfolio does not exist");
+			}
+			
 			//Add new stock and number of stocks to the user portfolio
 			portfolio.setUserId(user.getId());
 			Stock stock = new Stock();
 			stock.setNumber(number);
-			stock.setPortfolio(portfolio);
+			//stock.setPortfolio(portfolio);
+			
+			stock.setPortfolioId(portfolio.getPortfolioId());
 			stock.setShare(share);
 			
 			portfolio.getStocks().add(stock );

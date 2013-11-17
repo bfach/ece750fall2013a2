@@ -84,4 +84,16 @@ public class Stock implements Serializable {
 		this.portfolio = portfolio;
 	}
 
+	
+	public int getPortfolioId() {
+		return portfolioId;
+	}
+
+	public void setPortfolioId(int portfolioId) {
+		this.portfolioId = portfolioId;
+	}
+
+	private int portfolioId;
+	
+	
 }
