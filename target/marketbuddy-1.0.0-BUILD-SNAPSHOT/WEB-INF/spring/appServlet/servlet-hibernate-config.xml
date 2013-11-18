@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+<!-- 
+	<bean id="DataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/mbschema" />
+		<property name="username" value="root" />
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="testOnBorrow" value="true" />
+	</bean>
+	<bean id="SessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="DataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.boogle.marketbuddy.bean.User</value>
+				<value>com.boogle.marketbuddy.bean.Account</value>
+				<value>com.boogle.marketbuddy.bean.Portfolio</value>
+				<value>com.boogle.marketbuddy.bean.Share</value>
+				<value>com.boogle.marketbuddy.bean.Stock</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+				<prop key="hibernate.connection.autocommit">true</prop>
+			</props>
+		</property>
+	</bean> -->
+
+	<!-- Data Source Declaration -->
+	<bean id="DataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/mbschema" />
+		<property name="user" value="root" />
+
+		<!-- these are C3P0 properties -->
+		<property name="acquireIncrement" value="1" />
+		<property name="minPoolSize" value="5" />
+		<property name="maxPoolSize" value="10" />
+		<property name="maxIdleTime" value="600" />
+	</bean>
+
+	<bean id="SessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="DataSource" />
+        <property name="annotatedClasses">
+            <list>
+                <value>com.boogle.marketbuddy.bean.User</value>
+                <value>com.boogle.marketbuddy.bean.Account</value>
+                <value>com.boogle.marketbuddy.bean.Portfolio</value>
+                <value>com.boogle.marketbuddy.bean.Share</value>
+                <value>com.boogle.marketbuddy.bean.Stock</value>
+                <value>com.boogle.marketbuddy.bean.TradeOrder</value>
+            </list>
+        </property>
+        
+		<!--suppress InjectionValueTypeInspection -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+                <!-- <prop key="hibernate.connection.autocommit">true</prop>
+                 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!-- <prop key="transaction.factory_class">
+					net.sf.hibernate.transaction.JDBCTransactionFactory
+				</prop>
+				<prop key="hibernate.transaction.factory_class">
+					net.sf.hibernate.transaction.JDBCTransactionFactory
+				</prop>
+ -->				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.cglib.use_reflection_optimizer">false</prop>
+				<prop key="hibernate.jdbc.batch_size">0</prop>
+
+				<prop key="hibernate.c3p0.min_size">2</prop>
+				<prop key="hibernate.c3p0.max_size">5</prop>
+				<prop key="hibernate.c3p0.timeout">30</prop>
+				<prop key="hibernate.c3p0.max_statements"> 0 </prop>
+				<prop key="hibernate.c3p0.idle_test_period">300</prop>
+				<prop key="hibernate.c3p0.acquire_increment">1</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<!-- Transaction Manager is defined -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="dataSource" ref="DataSource" />
+		<property name="sessionFactory" ref="SessionFactory" />
+	</bean>
+
+
+	<!-- Enable the configuration of transactional behavior based on annotations -->
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+
+</beans>
