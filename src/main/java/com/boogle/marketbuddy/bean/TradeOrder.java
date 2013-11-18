@@ -23,9 +23,8 @@ public class TradeOrder implements Serializable{
 	@Column(name = "username")
 	private String username;
 	
-	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "user_id")
+	@Column(name = "id")
 	private int id;
 	
 	public void setStockCode(String stockCode) {
@@ -50,6 +49,7 @@ public class TradeOrder implements Serializable{
 
 	private Double price;
 	private Integer number;
+	@Id
 	private Long ts;
 	private String status;
 	
