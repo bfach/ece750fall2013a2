@@ -12,10 +12,10 @@ import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.boogle.marketbuddy.bean.Account;
 import com.boogle.marketbuddy.bean.Portfolio;
 import com.boogle.marketbuddy.bean.Share;
 import com.boogle.marketbuddy.bean.Stock;
+import com.boogle.marketbuddy.bean.TradeOrder;
 import com.boogle.marketbuddy.bean.User;
 
 @Repository
@@ -35,9 +35,10 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 		Session session = sessionFactory.openSession();
 		Transaction transaction = null;
 		
-		for(Stock stock : portfolio.getStocks()){
-			stock.setPortfolioId(portfolio.getPortfolioId());
-		}
+//		for(Stock stock : portfolio.getStocks()){
+//			stock.setPortfolioId(portfolio.getPortfolioId());
+//		}
+		session.clear();
 		
 		try {
 			transaction = session.beginTransaction();
@@ -45,8 +46,10 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 			transaction.commit();
 		} catch (HibernateException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Writing of portfolio failed! ", e);
+			//e.printStackTrace();
 			transaction.rollback();
+			throw e;
 			
 		} finally{
 			session.close();
@@ -105,7 +108,7 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 
 	}
 
-	public void placeOrder(String userName, String stockCode, double price, int number){
+	public void executeOrder(String userName, String stockCode, double price, int number){
 		Session session = sessionFactory.openSession();
 		Transaction transaction = null;
 		
@@ -146,7 +149,7 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 			stock.setPortfolioId(portfolio.getPortfolioId());
 			stock.setShare(share);
 			
-			portfolio.getStocks().add(stock );
+			portfolio.getStocks().add(stock);
 			session.merge(stock);
 			
 			transaction.commit();
@@ -176,6 +179,50 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 //		} finally{
 //			session.close();
 //		}
+	}
+
+
+	@Override
+	public void placeOrder(TradeOrder job) {
+		Session session = sessionFactory.openSession();
+		Transaction transaction = null;
+		
+		try {
+			transaction = session.beginTransaction();
+			session.merge(job);
+			transaction.commit();
+		} catch (HibernateException e) {
+			// TODO Auto-generated catch block
+			LOG.error("Writing of portfolio failed! ", e);
+			//e.printStackTrace();
+			transaction.rollback();
+			throw e;
+			
+		} finally{
+			session.close();
+		}
+		
+	}
+	
+	
+	@Override
+	public List<TradeOrder> getOrdersInProgress() {
+		Session session = sessionFactory.openSession();
+		
+		try {
+			Query query = session.createQuery("from TradeOrder t where t.status != 'COMPLETED' ");
+        	return (List<TradeOrder>) query.list();
+		
+		} catch (HibernateException e) {
+			// TODO Auto-generated catch block
+			LOG.error("Writing of portfolio failed! ", e);
+			//e.printStackTrace();
+			throw e;
+			
+		} finally{
+			session.close();
+		}
+		
 	}
 	
 }

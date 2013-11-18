@@ -61,6 +61,7 @@
                 <value>com.boogle.marketbuddy.bean.Portfolio</value>
                 <value>com.boogle.marketbuddy.bean.Share</value>
                 <value>com.boogle.marketbuddy.bean.Stock</value>
+                <value>com.boogle.marketbuddy.bean.TradeOrder</value>
             </list>
         </property>
         
@@ -68,7 +69,7 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.show_sql">true</prop>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
                 <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
                 <!-- <prop key="hibernate.connection.autocommit">true</prop>
                  -->

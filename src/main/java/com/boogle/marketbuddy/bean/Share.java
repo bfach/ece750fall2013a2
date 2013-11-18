@@ -19,6 +19,10 @@ public class Share implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 9218108863656871795L;
+	@Override
+	public String toString() {
+		return "Share [code=" + code + "]";
+	}
 	//BBRY for example
 	@Id
 	private String code;
