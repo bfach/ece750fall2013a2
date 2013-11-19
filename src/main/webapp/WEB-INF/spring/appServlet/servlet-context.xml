@@ -24,8 +24,7 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 
-	<context:component-scan base-package="com.boogle.marketbuddy" />
-
+	<context:component-scan base-package="com.boogle.marketbuddy, com.boogle.marketbuddy.controller, com.boogle.marketbuddy.dao, com.boogle.marketbuddy.bean" />
 	<beans:bean
 		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
 		<beans:property name="defaultContentType" value="text/html" />
