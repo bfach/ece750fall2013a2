@@ -72,6 +72,10 @@ public class PortfolioDAOImpl implements PortfolioDAO {
     				user.getId());
     		//session.clear();
         	
+        	if(portfolio == null){
+        		return null;
+        	}
+        	
         	Hibernate.initialize(portfolio.getStocks());
         
         	Query query = session.createQuery("from Stock s where s.portfolioId = :portfolioId ");
@@ -91,21 +95,30 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 	public void deletePortfolio(String username) {
 		Session session = sessionFactory.openSession();
 		Transaction transaction = null;
-		
-		try {
-			transaction = session.beginTransaction();
-			session.delete(userDAO.retrieveUserId(username));
-			
-			transaction.commit();
-		} catch (HibernateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			transaction.rollback();
-			
-		} finally{
-			session.close();
-		}
-		
+        try{
+        	User user = (User) session.get(User.class, username);
+        	if(user == null){
+        		throw new IllegalArgumentException("User does not exist");
+        	}
+        	
+        	Portfolio portfolio = (Portfolio) session.get(Portfolio.class,
+    				user.getId());
+    		//session.clear();
+        	
+        	
+        	Hibernate.initialize(portfolio.getStocks());
+        
+        	Query query = session.createQuery("from Stock s where s.portfolioId = :portfolioId ");
+        	query.setParameter("portfolioId", portfolio.getPortfolioId());
+        	List<Stock> list = query.list();
+        	
+        	portfolio.getStocks().addAll(list);
+        	transaction = session.beginTransaction();
+        	session.delete(portfolio);
+        	transaction.commit();
+        }finally{
+        	session.close();
+        }
 
 	}
 
@@ -149,6 +162,7 @@ public class PortfolioDAOImpl implements PortfolioDAO {
 			
 			stock.setPortfolioId(portfolio.getPortfolioId());
 			stock.setShare(share);
+			stock.setPurchasePrice(price);
 			
 			portfolio.getStocks().add(stock);
 			session.merge(stock);

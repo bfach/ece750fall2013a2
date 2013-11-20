@@ -64,6 +64,8 @@ public class Stock implements Serializable {
 	@Column(name = "stock_id")
 	private int stockId;
 	
+	@Column(name = "purchase_price")
+	private double purchasePrice;
 	
 	//@ManyToOne
 //	@Id
@@ -91,6 +93,14 @@ public class Stock implements Serializable {
 
 	public void setPortfolioId(int portfolioId) {
 		this.portfolioId = portfolioId;
+	}
+
+	public double getPurchasePrice() {
+		return purchasePrice;
+	}
+
+	public void setPurchasePrice(double purchasePrice) {
+		this.purchasePrice = purchasePrice;
 	}
 
 	private int portfolioId;
